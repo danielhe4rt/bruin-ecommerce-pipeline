@@ -141,10 +141,10 @@ def upsert_variants(conn, product_ids: dict, per_range: Tuple[int, int], start: 
             vsku = f"VAR-{pid}-{c[:3].upper()}-{z}"
             if vsku in existing:
                 continue
-            mfg = round(random.uniform(5, 100), 2)
-            sell = round(mfg * random.uniform(1.1, 1.8), 2)
+            manufacturing_price = round(random.uniform(5, 100), 2)
+            selling_price = round(manufacturing_price * random.uniform(1.1, 1.8), 2)
             to_insert.append(
-                (pid, vsku, c, z, mfg, sell, random.randint(0, 500), random.random() < 0.85, rand_dt(start, now), rand_dt(start, now))
+                (pid, vsku, c, z, manufacturing_price, selling_price, random.randint(0, 500), random.random() < 0.85, rand_dt(start, now), rand_dt(start, now))
             )
 
     if to_insert:
