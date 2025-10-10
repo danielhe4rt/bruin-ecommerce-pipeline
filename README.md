@@ -17,6 +17,9 @@ This repository contains a small ecommerce demo data stack you can run locally. 
 If you are new to Bruin: the SQL assets in ecommerce/assets/** are executed in DuckDB, and the pipeline resolves
 external connections by name (configured in your Bruin environment, not in this repo).
 
+
+
+
 ## Stack and Tooling
 
 - Language: Python (>= 3.9)
@@ -30,6 +33,67 @@ external connections by name (configured in your Bruin environment, not in this 
 - Orchestration/CLI: Bruin CLI (used to run pipeline, query DuckDB, and manage connections)
 
 ## Project Structure
+
+```mermaid
+flowchart TD
+    subgraph OLTP["Production OLTP (Postgres)"]
+        CUST[customers]
+        PROD[products]
+        ORD[orders]
+        OI[order_items]
+    end
+
+    subgraph Ingestion["Data Ingestion (Postgres → DuckDB)"]
+        RAW_CUST[raw.customers]
+        RAW_PROD[raw.products]
+        RAW_ORD[raw.orders]
+        RAW_OI[raw.order_items]
+    end
+
+    subgraph Staging["Staging Layer (Transform & Clean)"]
+        STG_ORD[stg.orders]
+        STG_OI[stg.order_items]
+    end
+
+    subgraph Mart["Analytics Marts"]
+        MART_SALES[mart.sales_daily]
+        MART_PROD[mart.product_performance]
+    end
+
+    subgraph Quality["Quality Checks"]
+        COL_CHECKS[Column-level Checks:\nnot_null, unique, regex, accepted_values, range]
+        BIZ_CHECKS[Business Rules:\n1. totals >= 0\n2. totals match items\n3. cancelled orders = 0 total]
+    end
+
+    %% Data flow
+    CUST --> RAW_CUST
+    PROD --> RAW_PROD
+    ORD --> RAW_ORD
+    OI --> RAW_OI
+
+    RAW_CUST --> STG_ORD
+    RAW_PROD --> STG_OI
+    RAW_ORD --> STG_ORD
+    RAW_OI --> STG_OI
+
+    STG_ORD --> MART_SALES
+    STG_OI --> MART_SALES
+    STG_OI --> MART_PROD
+
+    %% Quality checks
+    RAW_CUST -.-> COL_CHECKS
+    RAW_PROD -.-> COL_CHECKS
+    RAW_ORD -.-> BIZ_CHECKS
+    RAW_OI -.-> BIZ_CHECKS
+    MART_SALES -.-> COL_CHECKS
+    MART_PROD -.-> COL_CHECKS
+
+    %% Dashboards
+    MART_SALES --> DASH1[Revenue Dashboard]
+    MART_PROD --> DASH2[Product KPI Dashboard]
+
+```
+
 
 - generate_data.py — Python script that initializes schema and generates/upserts demo data in PostgreSQL
 - sql/ddl.sql — Postgres DDL for required tables (idempotent; enforced at runtime)
