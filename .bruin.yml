@@ -1,0 +1,15 @@
+default_environment: default
+environments:
+  default:
+    connections:
+      duckdb:
+        - name: duckdb-default
+          path: duckdb.db
+      postgres:
+        - name: pg-default
+          username: "postgres"
+          password: "postgres"
+          host: "localhost"
+          port: 5432
+          database: "postgres"
+
