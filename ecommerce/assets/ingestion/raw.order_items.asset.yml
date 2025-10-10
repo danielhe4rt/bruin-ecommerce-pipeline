@@ -1,0 +1,57 @@
+name: raw.order_items
+type: ingestr
+
+description: Ingest OLTP order_items from Postgres into DuckDB raw layer.
+
+parameters:
+  source_connection: pg-default
+  source_table: "public.order_items"
+  destination: duckdb
+
+columns:
+  - name: id
+    type: integer
+    primary_key: true
+    checks:
+      - name: not_null
+      - name: unique
+      - name: positive
+  - name: order_id
+    type: integer
+    checks:
+      - name: not_null
+      - name: positive
+  - name: variant_id
+    type: integer
+    checks:
+      - name: not_null
+      - name: positive
+  - name: quantity
+    type: integer
+    checks:
+      - name: not_null
+      - name: range
+        min: 1
+  - name: unit_price
+    type: numeric
+    checks:
+      - name: not_null
+      - name: range
+        min: 0
+  - name: total_price
+    type: numeric
+    checks:
+      - name: not_null
+      - name: range
+        min: 0
+  - name: created_at
+    type: timestamp
+    checks:
+      - name: not_null
+
+custom_checks:
+  - name: item totals match quantity x unit_price
+    description: Business rule - ensure total_price equals quantity*unit_price
+    query: |
+      SELECT COUNT(*) FROM raw.order_items WHERE total_price != quantity * unit_price
+    value: 0

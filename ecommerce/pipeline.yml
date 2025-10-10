@@ -1,0 +1,5 @@
+name: ecommerce_pg_to_duckdb
+
+default_connections:
+  duckdb: "duckdb-default"
+  postgres: "pg-default"

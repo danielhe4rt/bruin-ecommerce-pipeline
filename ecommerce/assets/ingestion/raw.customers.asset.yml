@@ -1,0 +1,40 @@
+name: raw.customers
+type: ingestr
+
+description: Ingest OLTP customers from Postgres into DuckDB raw layer.
+
+parameters:
+  source_connection: pg-default
+  source_table: "public.customers"
+  destination: duckdb
+
+columns:
+  - name: id
+    type: integer
+    primary_key: true
+    checks:
+      - name: not_null
+      - name: unique
+      - name: positive
+  - name: full_name
+    type: string
+  - name: email
+    type: string
+    checks:
+      - name: not_null
+  - name: country
+    type: string
+    checks:
+      - name: not_null
+  - name: city
+    type: string
+    checks:
+      - name: not_null
+  - name: created_at
+    type: timestamp
+    checks:
+      - name: not_null
+  - name: updated_at
+    type: timestamp
+    checks:
+      - name: not_null

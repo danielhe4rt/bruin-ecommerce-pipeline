@@ -1,0 +1,39 @@
+name: raw.products
+type: ingestr
+
+description: Ingest OLTP products from Postgres into DuckDB raw layer.
+
+parameters:
+  source_connection: pg-default
+  source_table: "public.products"
+  destination: duckdb
+
+columns:
+  - name: id
+    type: integer
+    primary_key: true
+    checks:
+      - name: not_null
+      - name: unique
+      - name: positive
+  - name: name
+    type: string
+    checks:
+      - name: not_null
+  - name: category
+    type: string
+    checks:
+      - name: not_null
+  - name: sku
+    type: string
+    checks:
+      - name: not_null
+      - name: unique
+  - name: created_at
+    type: timestamp
+    checks:
+      - name: not_null
+  - name: updated_at
+    type: timestamp
+    checks:
+      - name: not_null
