@@ -1,26 +1,23 @@
-name: raw.orders
-type: ingestr
+/* @bruin
+name: stg.orders
+type: duckdb.sql
+materialization:
+  type: table
 
-description: Ingest OLTP orders from Postgres into DuckDB raw layer.
-
-parameters:
-  source_connection: pg-default
-  source_table: "public.orders"
-  destination: duckdb
+depends:
+  - raw.orders
+  - raw.customers
 
 columns:
-  - name: id
+  - name: order_id
     type: integer
-    primary_key: true
     checks:
       - name: not_null
       - name: unique
-      - name: positive
   - name: customer_id
     type: integer
     checks:
       - name: not_null
-      - name: positive
   - name: order_date
     type: timestamp
     checks:
@@ -37,12 +34,17 @@ columns:
       - name: not_null
       - name: range
         min: 0
-  - name: created_at
-    type: timestamp
-    checks:
-      - name: not_null
-  - name: updated_at
-    type: timestamp
-    checks:
-      - name: not_null
 
+@bruin */
+
+
+WITH src AS (
+  SELECT
+    o.id              AS order_id,
+    o.customer_id,
+    o.order_date,
+    o.status,
+    CASE WHEN o.total_amount < 0 THEN 0 ELSE o.total_amount END AS total_amount
+  FROM raw.orders o
+)
+SELECT * FROM src;

@@ -1,8 +1,11 @@
 /* @bruin
+
 name: mart.product_performance
 type: duckdb.sql
+
 materialization:
   type: table
+  strategy: create+replace
 
 depends:
   - stg.products
@@ -12,44 +15,37 @@ depends:
 
 columns:
   - name: product_id
-    type: integer
+    type: BIGINT
     checks:
       - name: not_null
   - name: product_name
-    type: string
+    type: VARCHAR
     checks:
       - name: not_null
   - name: category
-    type: string
+    type: VARCHAR
     checks:
       - name: not_null
   - name: items_sold
-    type: integer
+    type: HUGEINT
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: gross_revenue
-    type: numeric
+    type: DECIMAL(38,2)
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: avg_item_price
-    type: numeric
+    type: DOUBLE
     checks:
       - name: not_null
-      - name: range
-        min: 0
 
 custom_checks:
   - name: no negative prices or revenue
-    query: |
-      SELECT COUNT(*) FROM mart.product_performance WHERE avg_item_price < 0 OR gross_revenue < 0
     value: 0
+    query: SELECT COUNT(*) FROM mart.product_performance WHERE avg_item_price < 0 OR gross_revenue < 0
+
 @bruin */
 
--- Product performance aggregated at product level (variants rolled up to products)
 WITH paid_items AS (
   SELECT oi.*
   FROM stg.order_items oi

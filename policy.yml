@@ -1,0 +1,6 @@
+rulesets:
+  - name: standard
+    selector:
+      - path: .*/orders-performance/.*
+    rules:
+      - asset-name-is-lowercase

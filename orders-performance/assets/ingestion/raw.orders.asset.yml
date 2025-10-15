@@ -1,0 +1,70 @@
+name: raw.orders
+type: ingestr
+description: Ingest OLTP orders from Postgres into DuckDB raw layer.
+tags:
+  - orders
+  - amazing-tag
+owner: danielhe4rt@gmail.com
+
+parameters:
+  destination: duckdb
+  source_connection: pg-default
+  source_table: public.orders
+
+columns:
+  - name: id
+    type: integer
+    primary_key: true
+    checks:
+      - name: not_null
+      - name: unique
+      - name: positive
+  - name: status
+    type: string
+    checks:
+      - name: not_null
+      - name: accepted_values
+        value:
+          - pending
+          - paid
+          - cancelled
+          - shipped
+  - name: updated_at
+    type: timestamp
+    checks:
+      - name: not_null
+name: raw.orders
+type: ingestr
+description: Ingest OLTP orders from Postgres into DuckDB raw layer.
+tags:
+  - orders
+  - amazing-tag
+owner: danielhe4rt@gmail.com
+
+parameters:
+  destination: duckdb
+  source_connection: pg-default
+  source_table: public.orders
+
+columns:
+  - name: id
+    type: integer
+    primary_key: true
+    checks:
+      - name: not_null
+      - name: unique
+      - name: positive
+  - name: status
+    type: string
+    checks:
+      - name: not_null
+      - name: accepted_values
+        value:
+          - pending
+          - paid
+          - cancelled
+          - shipped
+  - name: updated_at
+    type: timestamp
+    checks:
+      - name: not_null

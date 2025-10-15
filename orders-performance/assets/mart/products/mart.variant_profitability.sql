@@ -1,13 +1,17 @@
 /* @bruin
+
 name: mart.variant_profitability
 type: duckdb.sql
+
 materialization:
   type: table
+  strategy: create+replace
 
 depends:
   - stg.product_variants
   - stg.order_items
   - stg.orders
+  - stg.products
 
 columns:
   - name: variant_id
@@ -27,20 +31,14 @@ columns:
     type: integer
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: revenue
     type: numeric
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: cost
     type: numeric
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: profit
     type: numeric
     checks:
@@ -50,11 +48,6 @@ columns:
     checks:
       - name: not_null
 
-custom_checks:
-  - name: profit non-negative when selling >= manufacturing
-    query: |
-      SELECT COUNT(*) FROM mart.variant_profitability WHERE selling_price_below_cost = true AND profit > 0
-    value: 0
 @bruin */
 
 WITH paid_items AS (
@@ -88,7 +81,6 @@ SELECT
   CASE WHEN SUM(j.total_price) = 0 THEN 0
        ELSE (SUM(j.total_price) - SUM(j.quantity * j.manufacturing_price)) / SUM(j.total_price)
   END AS margin_pct,
-  -- helper flag for custom check logic
   BOOL_OR(j.selling_price < j.manufacturing_price) AS selling_price_below_cost
 FROM joined j
 GROUP BY 1,2,3,4

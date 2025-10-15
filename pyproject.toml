@@ -1,15 +1,8 @@
 [project]
-name = "bruin-data-gen"
+name = "bruin"
 version = "0.1.0"
-description = "Ecommerce demo data generator for PostgreSQL"
-readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
-  "psycopg[binary]>=3.1.18",
-  "Faker>=25.0.0",
+    "faker>=37.11.0",
+    "psycopg>=3.2.10",
 ]
-
-[tool.uv.scripts]
-# Run the data generator. Pass all flags after "--".
-# Example: uv run generate-data -- --dsn postgresql://... --start-date 2024-01-01 --replace-orders
-generate-data = "python generate_data.py"

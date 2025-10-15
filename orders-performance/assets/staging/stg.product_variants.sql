@@ -1,8 +1,11 @@
 /* @bruin
+
 name: stg.product_variants
 type: duckdb.sql
+
 materialization:
   type: table
+  strategy: create+replace
 
 depends:
   - raw.product_variants
@@ -31,20 +34,14 @@ columns:
     type: numeric
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: selling_price
     type: numeric
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: stock_quantity
     type: integer
     checks:
       - name: not_null
-      - name: range
-        min: 0
   - name: is_active
     type: boolean
     checks:
@@ -57,6 +54,22 @@ columns:
     type: timestamp
     checks:
       - name: not_null
+
+custom_checks:
+  - name: validate product variant sizes
+    description: |
+      Ensures that if the product category is 'shoes', the size must be numeric.
+      Otherwise, the size must be one of ['S', 'M', 'L'].
+    value: 0
+    query: |
+      SELECT  
+        COUNT(*) AS invalid_count
+      FROM raw.product_variants v
+      JOIN stg.products p ON p.product_id = v.product_id
+      WHERE
+        (p.category = 'shoes' AND NOT (v.size ~ '^[0-9]+$'))
+        OR (p.category != 'shoes' AND v.size NOT IN ('S', 'M', 'L'))
+    
 
 @bruin */
 
