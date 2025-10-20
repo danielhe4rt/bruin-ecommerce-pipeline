@@ -1,0 +1,18 @@
+# Introduction
+
+Bruin University is built around reproducible examples and guided walkthroughs.
+Each tutorial mirrors real-world data engineering workflows: setting up OLTP systems, generating data, building ingestion pipelines, applying quality checks, and producing analytics layers.
+
+Check our demos/tutorials:
+
+::card-group
+  :::card
+  ---
+  icon: i-simple-icons-nuxtdotjs
+  target: _blank
+  title: Nuxt
+  to: https://docs-template.nuxt.dev/tutorials/ecommerce-pipeline
+  ---
+  Building an E-commerce Pipeline
+  :::
+::
