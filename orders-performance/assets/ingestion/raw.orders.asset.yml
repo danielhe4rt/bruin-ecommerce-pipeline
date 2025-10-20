@@ -1,0 +1,13 @@
+name: raw.orders
+type: ingestr
+description: Ingest OLTP orders from Postgres into DuckDB raw layer.
+
+tags:
+  - raw
+
+parameters:
+  destination: duckdb
+  source_connection: pg-default
+  source_table: public.orders
+
+

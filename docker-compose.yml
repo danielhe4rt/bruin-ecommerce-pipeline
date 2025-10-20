@@ -1,0 +1,17 @@
+services:
+  bruin-postgres:
+    image: postgres:18-alpine
+    container_name: bruin-ecommerce
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - bruin_pg_data:/var/lib/postgresql/data
+
+volumes:
+  bruin_pg_data:
