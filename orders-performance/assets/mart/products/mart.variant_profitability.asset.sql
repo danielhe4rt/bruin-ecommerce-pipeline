@@ -3,6 +3,9 @@
 name: mart.variant_profitability
 type: duckdb.sql
 
+tags:
+  - mart
+
 materialization:
   type: table
   strategy: create+replace

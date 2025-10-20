@@ -40,7 +40,7 @@ custom_checks:
       JOIN stg.products p ON p.product_id = v.product_id
       WHERE
         (p.category = 'shoes' AND NOT (v.size ~ '^[0-9]+$'))
-        OR (p.category != 'shoes' AND v.size NOT IN ('S', 'M', 'L'))
+        OR (p.category != 'shoes' AND v.size NOT IN ('S', 'M', 'L', 'XL'))
     
 
 @bruin */

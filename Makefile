@@ -1,5 +1,5 @@
 # ===================================================================
-# 🧰 Bruin E-commerce Demo Project Makefile
+# Bruin E-commerce Demo Project Makefile
 # ===================================================================
 .DEFAULT_GOAL := help
 
@@ -37,14 +37,14 @@ docker-down: ## Stop all running Docker containers
 	@echo "✅ Containers stopped."
 
 # -------------------------------------------------------------------
-# 🧪 Data Generation Commands
+#  Data Generation Commands
 # -------------------------------------------------------------------
-.PHONY: generate-data generate-data-scale generate-data-chaos
+.PHONY: generate-data generate-data-scale generate-chaos
 
-# 🧪 Default dataset
+
 generate-data: ## Generate default dataset (base scale, no chaos)
 	@echo ""
-	@echo "🧪 Generating default dataset..."
+	@echo " Generating default dataset..."
 	@echo "→ DSN:      $(DSN)"
 	@echo "→ Window:   $(STARTING_AT) → $(ENDING_AT)"
 	@echo ""
@@ -55,7 +55,7 @@ generate-data: ## Generate default dataset (base scale, no chaos)
 	@echo ""
 	@echo "✅ Default data generation complete!"
 
-# 📈 Scaled dataset (e.g. make generate-data-scale SCALE=3)
+
 generate-data-scale: ## Generate dataset scaled by N× (e.g. SCALE=3)
 	@if [ -z "$(SCALE)" ]; then \
 		echo "\033[31m[ERR]\033[0m SCALE is required, e.g. make generate-data-scale SCALE=3"; exit 1; \
@@ -75,8 +75,7 @@ generate-data-scale: ## Generate dataset scaled by N× (e.g. SCALE=3)
 	@echo ""
 	@echo "✅ Scaled dataset generation complete!"
 
-# 🔥 Scaled + chaotic dataset (e.g. make generate-data-chaos SCALE=3 CHAOS=10)
-generate-data-chaos: ## Generate dataset with scale and chaos (e.g. SCALE=3 CHAOS=10)
+generate-chaos: ## Generate dataset with scale and chaos (e.g. SCALE=3 CHAOS=10)
 	@if [ -z "$(SCALE)" ]; then echo "\033[31m[ERR]\033[0m SCALE is required, e.g. make generate-data-chaos SCALE=3 CHAOS=10"; exit 1; fi
 	@if [ -z "$(CHAOS)" ]; then echo "\033[31m[ERR]\033[0m CHAOS is required, e.g. make generate-data-chaos SCALE=3 CHAOS=10"; exit 1; fi
 	@echo ""
@@ -156,7 +155,7 @@ query: ## Run a SQL query against DuckDB via Bruin (use TABLE= or SQL="...")
 
 mart-list: ## Preview first 10 rows from core mart tables in DuckDB
 	@echo "📊 Previewing common mart tables..."
-	@for t in mart.sales_daily mart.product_performance mart.variant_profitability; do \
+	@for t in mart.sales_daily mart.product_performance mart.variant_profitability mart.customers_by_age mart.customers_by_country; do \
 	  echo "────────────────────────────────────────────────────────────"; \
 	  echo "🔍 $$t"; \
 	  bruin query --c duckdb-default --q "select * from $$t limit 10"; \

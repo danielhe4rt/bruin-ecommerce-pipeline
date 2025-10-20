@@ -4,7 +4,6 @@ name: mart.customers_by_age
 type: duckdb.sql
 tags:
   - mart
-  - amazing-tag
 
 materialization:
   type: table

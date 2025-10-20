@@ -3,6 +3,9 @@
 name: mart.product_performance
 type: duckdb.sql
 
+tags:
+  - mart
+
 materialization:
   type: table
   strategy: create+replace

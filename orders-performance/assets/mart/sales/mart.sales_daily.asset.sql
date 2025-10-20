@@ -3,9 +3,12 @@
 name: mart.sales_daily
 type: duckdb.sql
 
+tags:
+  - mart
+
 materialization:
   type: table
-  strategy: append
+  strategy: create+replace
 
 depends:
   - stg.order_items
@@ -36,19 +39,27 @@ custom_checks:
 
 @bruin */
 
-WITH daily_orders AS (SELECT CAST(CAST(order_date AS TIMESTAMP) AS DATE)                               AS sale_date,
-                             COUNT(*)                                                                  AS orders_count,
-                             SUM(CASE WHEN status IN ('paid', 'shipped') THEN total_amount ELSE 0 END) AS revenue
-                      FROM stg.orders
-                      GROUP BY 1),
-     daily_items AS (SELECT CAST(CAST(o.order_date AS TIMESTAMP) AS DATE) AS sale_date,
-                            COUNT(*)                                      AS items_count
-                     FROM stg.order_items oi
-                              JOIN stg.orders o ON o.order_id = oi.order_id
-                     GROUP BY 1)
-SELECT d.sale_date,
-       d.orders_count,
-       COALESCE(i.items_count, 0) AS items_count,
-       d.revenue
-FROM daily_orders d  
-ORDER BY sale_date;
+WITH daily_orders AS (
+    SELECT
+        CAST(strftime('%Y-%m-%d', order_date::TIMESTAMP) AS DATE) AS sale_date,
+        COUNT(*) AS orders_count,
+        SUM(CASE WHEN status IN ('paid', 'shipped') THEN total_amount ELSE 0 END) AS revenue
+    FROM stg.orders
+    GROUP BY 1
+),
+daily_items AS (
+    SELECT
+        CAST(strftime('%Y-%m-%d', o.order_date::TIMESTAMP) AS DATE) AS sale_date,
+        COUNT(*) AS items_count
+    FROM stg.order_items oi
+    JOIN stg.orders o ON o.order_id = oi.order_id
+    GROUP BY 1
+)
+SELECT
+    CAST(strftime('%Y-%m-%d', o.sale_date::TIMESTAMP) AS DATE) AS sale_date,
+    o.orders_count,
+    COALESCE(i.items_count, 0) AS items_count,
+    o.revenue
+FROM daily_orders o
+LEFT JOIN daily_items i USING (sale_date)
+ORDER BY o.sale_date;

@@ -3,6 +3,9 @@
 name: mart.customers_by_country
 type: duckdb.sql
 
+tags:
+  - mart
+
 materialization:
   type: table
   strategy: create+replace
